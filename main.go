@@ -46,7 +46,7 @@ type discordOut struct {
 func main() {
 	whURL := flag.String("webhook.url", "https://blah", "")
 	flag.Parse()
-	http.ListenAndServe(":8080", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	http.ListenAndServe("localhost:9094", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		b, err := ioutil.ReadAll(r.Body)
 		if err != nil {
 			panic(err)
@@ -64,7 +64,7 @@ func main() {
 
 		Content := "!!"
 		if amo.CommonAnnotations.Summary != "" {
-			Content = fmt.Sprintf(" === %s === \n", amo.CommonAnnotations.Summary)
+			Content = fmt.Sprintf(" === %s === \n```", amo.CommonAnnotations.Summary)
 		}
 
 		for _, alert := range amo.Alerts {
@@ -72,10 +72,10 @@ func main() {
 			if strings.Contains(realname, "localhost") && alert.Labels["exported_instance"] != "" {
 				realname = alert.Labels["exported_instance"]
 			}
-			Content += fmt.Sprintf("FIRING: %s on %s\n", alert.Labels["alertname"], realname)
+			Content += fmt.Sprintf("[%s]: %s on %s\n%s\n", strings.ToUpper(amo.Status), alert.Labels["alertname"], realname, alert.Annotations.Description)
 		}
 
-		DO.Content = Content
+		DO.Content = Content + "```"
 
 		DOD, _ := json.Marshal(DO)
 		http.Post(*whURL, "application/json", bytes.NewReader(DOD))
