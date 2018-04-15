@@ -62,7 +62,7 @@ func main() {
 			Name: amo.Status,
 		}
 
-		Content := "!!"
+		Content := "```"
 		if amo.CommonAnnotations.Summary != "" {
 			Content = fmt.Sprintf(" === %s === \n```", amo.CommonAnnotations.Summary)
 		}
