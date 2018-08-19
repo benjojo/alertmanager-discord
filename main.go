@@ -47,7 +47,7 @@ func main() {
 	webhookUrl := os.Getenv("webhook")
 	whURL := flag.String("webhook.url", webhookUrl, "")
 	flag.Parse()
-	http.ListenAndServe("localhost:9094", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	http.ListenAndServe(":9094", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		b, err := ioutil.ReadAll(r.Body)
 		if err != nil {
 			panic(err)
