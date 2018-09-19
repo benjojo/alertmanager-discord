@@ -79,7 +79,7 @@ func main() {
 			if strings.Contains(realname, "localhost") && alert.Labels["exported_instance"] != "" {
 				realname = alert.Labels["exported_instance"]
 			}
-			Content += fmt.Sprintf(":small_red_triangle: [%s]: %s on %s\n%s\n", strings.ToUpper(amo.Status), alert.Labels["alertname"], realname, alert.Annotations.Description)
+			Content += fmt.Sprintf("[%s]: %s on %s\n%s\n\n", strings.ToUpper(amo.Status), alert.Labels["alertname"], realname, alert.Annotations.Description)
 		}
 
 		DO.Content = Content + "```"
