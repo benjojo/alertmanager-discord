@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+        "os"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -44,9 +45,14 @@ type discordOut struct {
 }
 
 func main() {
-	webhookUrl := os.Getenv("webhook")
+	webhookUrl := os.Getenv("DISCORD_WEBHOOK")
+	if webhookUrl == "" {
+		fmt.Fprintf(os.Stderr, "error: environment variable DISCORD_WEBHOOK not found\n")
+        	os.Exit(1)
+	}
 	whURL := flag.String("webhook.url", webhookUrl, "")
 	flag.Parse()
+	fmt.Fprintf(os.Stdout, "info: Listening on 0.0.0.0:9094\n")
 	http.ListenAndServe(":9094", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		b, err := ioutil.ReadAll(r.Body)
 		if err != nil {
@@ -73,7 +79,7 @@ func main() {
 			if strings.Contains(realname, "localhost") && alert.Labels["exported_instance"] != "" {
 				realname = alert.Labels["exported_instance"]
 			}
-			Content += fmt.Sprintf("[%s]: %s on %s\n%s\n", strings.ToUpper(amo.Status), alert.Labels["alertname"], realname, alert.Annotations.Description)
+			Content += fmt.Sprintf("[%s]: %s on %s\n%s\n\n", strings.ToUpper(amo.Status), alert.Labels["alertname"], realname, alert.Annotations.Description)
 		}
 
 		DO.Content = Content + "```"

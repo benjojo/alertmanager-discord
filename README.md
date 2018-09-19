@@ -1,7 +1,7 @@
 alertmanager-discord
 ===
 
-Give this a webhook and point it as a webhook on alertmanager, and it will post your alerts into a discord channel for you as they trigger:
+Give this a webhook (with the DISCORD_WEBHOOK environment variable) and point it as a webhook on alertmanager, and it will post your alerts into a discord channel for you as they trigger:
 
 ![](/.github/demo.png)
 
