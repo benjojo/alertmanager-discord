@@ -48,12 +48,14 @@ type discordOut struct {
 
 func main() {
 	webhookUrl := os.Getenv("DISCORD_WEBHOOK")
-	if webhookUrl == "" {
+	whURL := flag.String("webhook.url", webhookUrl, "")
+	flag.Parse()
+
+	if webhookUrl == "" && *whURL == "" {
 		fmt.Fprintf(os.Stderr, "error: environment variable DISCORD_WEBHOOK not found\n")
 		os.Exit(1)
 	}
-	whURL := flag.String("webhook.url", webhookUrl, "")
-	flag.Parse()
+
 	fmt.Fprintf(os.Stdout, "info: Listening on 0.0.0.0:9094\n")
 	http.ListenAndServe(":9094", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		b, err := ioutil.ReadAll(r.Body)
