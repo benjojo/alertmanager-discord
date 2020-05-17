@@ -32,3 +32,7 @@ receivers:
   webhook_configs:
   - url: 'http://localhost:9094'
 ```
+
+## Docker
+
+If you run a fancy docker/k8s infra, you can find the docker hub repo here: https://hub.docker.com/r/benjojo/alertmanager-discord/
