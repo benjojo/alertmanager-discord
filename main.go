@@ -49,7 +49,8 @@ type alertManOut struct {
 }
 
 type discordOut struct {
-	Embeds []discordEmbed `json:"embeds"`
+	Content string         `json:"content"`
+	Embeds  []discordEmbed `json:"embeds"`
 }
 
 type discordEmbed struct {
@@ -97,7 +98,7 @@ func main() {
 			DO := discordOut{}
 
 			RichEmbed := discordEmbed{
-				Title:       amo.CommonLabels.Alertname,
+				Title:       fmt.Sprintf("[%s:%d] %s", strings.ToUpper(status), len(alerts), amo.CommonLabels.Alertname),
 				Description: amo.CommonAnnotations.Summary,
 				Color:       ColorGrey,
 				Fields:      []discordEmbedField{},
@@ -107,6 +108,10 @@ func main() {
 				RichEmbed.Color = ColorRed
 			} else if status == "resolved" {
 				RichEmbed.Color = ColorGreen
+			}
+
+			if amo.CommonAnnotations.Summary != "" {
+				DO.Content = fmt.Sprintf(" === %s === \n", amo.CommonAnnotations.Summary)
 			}
 
 			for _, alert := range alerts {
