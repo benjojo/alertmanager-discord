@@ -11,6 +11,13 @@ import (
 	"strings"
 )
 
+// Discord color values
+const (
+	ColorRed   = 10038562
+	ColorGreen = 3066993
+	ColorGrey  = 9807270
+)
+
 type alertManAlert struct {
 	Annotations struct {
 		Description string `json:"description"`
@@ -42,8 +49,19 @@ type alertManOut struct {
 }
 
 type discordOut struct {
-	Content string `json:"content"`
-	Name    string `json:"username"`
+	Embeds []discordEmbed `json:"embeds"`
+}
+
+type discordEmbed struct {
+	Title       string              `json:"title"`
+	Description string              `json:"description"`
+	Color       int                 `json:"color"`
+	Fields      []discordEmbedField `json:"fields"`
+}
+
+type discordEmbedField struct {
+	Name  string `json:"name"`
+	Value string `json:"value"`
 }
 
 func main() {
@@ -76,13 +94,19 @@ func main() {
 		}
 
 		for status, alerts := range groupedAlerts {
-			DO := discordOut{
-				Name: status,
+			DO := discordOut{}
+
+			RichEmbed := discordEmbed{
+				Title:       amo.CommonLabels.Alertname,
+				Description: amo.CommonAnnotations.Summary,
+				Color:       ColorGrey,
+				Fields:      []discordEmbedField{},
 			}
 
-			Content := "```"
-			if amo.CommonAnnotations.Summary != "" {
-				Content = fmt.Sprintf(" === %s === \n```", amo.CommonAnnotations.Summary)
+			if status == "firing" {
+				RichEmbed.Color = ColorRed
+			} else if status == "resolved" {
+				RichEmbed.Color = ColorGreen
 			}
 
 			for _, alert := range alerts {
@@ -90,10 +114,14 @@ func main() {
 				if strings.Contains(realname, "localhost") && alert.Labels["exported_instance"] != "" {
 					realname = alert.Labels["exported_instance"]
 				}
-				Content += fmt.Sprintf("[%s]: %s on %s\n%s\n\n", strings.ToUpper(status), alert.Labels["alertname"], realname, alert.Annotations.Description)
+
+				RichEmbed.Fields = append(RichEmbed.Fields, discordEmbedField{
+					Name:  fmt.Sprintf("[%s]: %s on %s", strings.ToUpper(status), alert.Labels["alertname"], realname),
+					Value: alert.Annotations.Description,
+				})
 			}
 
-			DO.Content = Content + "```"
+			DO.Embeds = []discordEmbed{RichEmbed}
 
 			DOD, _ := json.Marshal(DO)
 			http.Post(*whURL, "application/json", bytes.NewReader(DOD))
