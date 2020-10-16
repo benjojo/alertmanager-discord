@@ -6,8 +6,10 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
+	"regexp"
 	"strings"
 )
 
@@ -66,17 +68,22 @@ type discordEmbedField struct {
 }
 
 func main() {
-	webhookUrl := os.Getenv("DISCORD_WEBHOOK")
-	whURL := flag.String("webhook.url", webhookUrl, "")
+	envWhURL := os.Getenv("DISCORD_WEBHOOK")
+	whURL := flag.String("webhook.url", envWhURL, "Discord WebHook URL.")
+	listenAddress := flag.String("listen.address", "127.0.0.1:9094", "Address:Port to listen on.")
 	flag.Parse()
 
-	if webhookUrl == "" && *whURL == "" {
-		fmt.Fprintf(os.Stderr, "error: environment variable DISCORD_WEBHOOK not found\n")
-		os.Exit(1)
+	if *whURL == "" {
+		log.Fatalf("Environment variable 'DISCORD_WEBHOOK' or CLI parameter 'webhook.url' not found.")
 	}
 
-	fmt.Fprintf(os.Stdout, "info: Listening on 0.0.0.0:9094\n")
-	http.ListenAndServe(":9094", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	re := regexp.MustCompile(`https://discord(?:app)?.com/api/webhooks/[0-9]{18}/[a-zA-Z0-9_-]+`)
+	if ok := re.Match([]byte(*whURL)); !ok {
+		log.Fatalf("The Discord WebHook URL doesn't seem to be valid.")
+	}
+
+	log.Printf("Listening on: %s", *listenAddress)
+	http.ListenAndServe(*listenAddress, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		b, err := ioutil.ReadAll(r.Body)
 		if err != nil {
 			panic(err)
