@@ -67,14 +67,23 @@ type discordEmbedField struct {
 	Value string `json:"value"`
 }
 
+const defaultListenAddress = "127.0.0.1:9094"
+
 func main() {
 	envWhURL := os.Getenv("DISCORD_WEBHOOK")
 	whURL := flag.String("webhook.url", envWhURL, "Discord WebHook URL.")
-	listenAddress := flag.String("listen.address", "127.0.0.1:9094", "Address:Port to listen on.")
+
+	envListenAddress := os.Getenv("LISTEN_ADDRESS")
+	listenAddress := flag.String("listen.address", envListenAddress, "Address:Port to listen on.")
+
 	flag.Parse()
 
 	if *whURL == "" {
 		log.Fatalf("Environment variable 'DISCORD_WEBHOOK' or CLI parameter 'webhook.url' not found.")
+	}
+
+	if *listenAddress == "" {
+		*listenAddress = defaultListenAddress
 	}
 
 	re := regexp.MustCompile(`https://discord(?:app)?.com/api/webhooks/[0-9]{18}/[a-zA-Z0-9_-]+`)
