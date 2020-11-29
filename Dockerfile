@@ -24,5 +24,5 @@ COPY --from=builder /go/bin/alertmanager-discord /go/bin/alertmanager-discord
 
 EXPOSE 9094
 USER appuser
-ENTRYPOINT ["/go/bin/alertmanager-discord"]
+ENTRYPOINT ["/go/bin/alertmanager-discord", "-listen.address", "0.0.0.0:9094"]
 
