@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"regexp"
 	"strings"
@@ -86,9 +87,14 @@ func main() {
 		*listenAddress = defaultListenAddress
 	}
 
+	_, err := url.Parse(*whURL)
+	if err != nil {
+		log.Fatalf("The Discord WebHook URL doesn't seem to be a valid URL.")
+	}
+
 	re := regexp.MustCompile(`https://discord(?:app)?.com/api/webhooks/[0-9]{18}/[a-zA-Z0-9_-]+`)
 	if ok := re.Match([]byte(*whURL)); !ok {
-		log.Fatalf("The Discord WebHook URL doesn't seem to be valid.")
+		log.Printf("The Discord WebHook URL doesn't seem to be valid.")
 	}
 
 	log.Printf("Listening on: %s", *listenAddress)
