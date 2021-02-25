@@ -99,6 +99,8 @@ func main() {
 
 	log.Printf("Listening on: %s", *listenAddress)
 	http.ListenAndServe(*listenAddress, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Printf("%s - [%s] %s", r.Host, r.Method, r.URL.RawPath)
+
 		b, err := ioutil.ReadAll(r.Body)
 		if err != nil {
 			panic(err)
@@ -107,7 +109,14 @@ func main() {
 		amo := alertManOut{}
 		err = json.Unmarshal(b, &amo)
 		if err != nil {
-			panic(err)
+			if len(b) > 1024 {
+				log.Printf("Failed to unpack inbound alert request - %s...", string(b[:1023]))
+
+			} else {
+				log.Printf("Failed to unpack inbound alert request - %s", string(b))
+			}
+
+			return
 		}
 
 		groupedAlerts := make(map[string][]alertManAlert)
