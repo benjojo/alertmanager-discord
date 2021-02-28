@@ -5,7 +5,28 @@ Give this a webhook (with the DISCORD_WEBHOOK environment variable) and point it
 
 ![](/.github/demo-new.png)
 
-Example alert manager config:
+## Warning
+
+This program is not a replacement to alertmanager, it accepts webhooks from alertmanager, not prometheus.
+
+The standard "dataflow" should be:
+
+```
+Prometheus -------------> alertmanager -------------------> alertmanager-discord
+
+alerting:                 receivers:                         
+  alertmanagers:          - name: 'discord_webhook'         environment:
+  - static_configs:         webhook_configs:                   - DISCORD_WEBHOOK=https://discordapp.com/api/we...
+    - targets:              - url: 'http://localhost:9094'  
+       - 127.0.0.1:9093   
+
+
+
+
+
+```
+
+## Example alertmanager config:
 
 ```
 global:
