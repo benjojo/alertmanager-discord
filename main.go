@@ -90,6 +90,52 @@ func checkWhURL(whURL string) {
 	}
 }
 
+func sendWebhook(amo *alertManOut) {
+	groupedAlerts := make(map[string][]alertManAlert)
+
+	for _, alert := range amo.Alerts {
+		groupedAlerts[alert.Status] = append(groupedAlerts[alert.Status], alert)
+	}
+
+	for status, alerts := range groupedAlerts {
+		DO := discordOut{}
+
+		RichEmbed := discordEmbed{
+			Title:       fmt.Sprintf("[%s:%d] %s", strings.ToUpper(status), len(alerts), amo.CommonLabels.Alertname),
+			Description: amo.CommonAnnotations.Summary,
+			Color:       ColorGrey,
+			Fields:      []discordEmbedField{},
+		}
+
+		if status == "firing" {
+			RichEmbed.Color = ColorRed
+		} else if status == "resolved" {
+			RichEmbed.Color = ColorGreen
+		}
+
+		if amo.CommonAnnotations.Summary != "" {
+			DO.Content = fmt.Sprintf(" === %s === \n", amo.CommonAnnotations.Summary)
+		}
+
+		for _, alert := range alerts {
+			realname := alert.Labels["instance"]
+			if strings.Contains(realname, "localhost") && alert.Labels["exported_instance"] != "" {
+				realname = alert.Labels["exported_instance"]
+			}
+
+			RichEmbed.Fields = append(RichEmbed.Fields, discordEmbedField{
+				Name:  fmt.Sprintf("[%s]: %s on %s", strings.ToUpper(status), alert.Labels["alertname"], realname),
+				Value: alert.Annotations.Description,
+			})
+		}
+
+		DO.Embeds = []discordEmbed{RichEmbed}
+
+		DOD, _ := json.Marshal(DO)
+		http.Post(*whURL, "application/json", bytes.NewReader(DOD))
+	}
+}
+
 func main() {
 	flag.Parse()
 	checkWhURL(*whURL)
@@ -147,49 +193,6 @@ func main() {
 
 			return
 		}
-
-		groupedAlerts := make(map[string][]alertManAlert)
-
-		for _, alert := range amo.Alerts {
-			groupedAlerts[alert.Status] = append(groupedAlerts[alert.Status], alert)
-		}
-
-		for status, alerts := range groupedAlerts {
-			DO := discordOut{}
-
-			RichEmbed := discordEmbed{
-				Title:       fmt.Sprintf("[%s:%d] %s", strings.ToUpper(status), len(alerts), amo.CommonLabels.Alertname),
-				Description: amo.CommonAnnotations.Summary,
-				Color:       ColorGrey,
-				Fields:      []discordEmbedField{},
-			}
-
-			if status == "firing" {
-				RichEmbed.Color = ColorRed
-			} else if status == "resolved" {
-				RichEmbed.Color = ColorGreen
-			}
-
-			if amo.CommonAnnotations.Summary != "" {
-				DO.Content = fmt.Sprintf(" === %s === \n", amo.CommonAnnotations.Summary)
-			}
-
-			for _, alert := range alerts {
-				realname := alert.Labels["instance"]
-				if strings.Contains(realname, "localhost") && alert.Labels["exported_instance"] != "" {
-					realname = alert.Labels["exported_instance"]
-				}
-
-				RichEmbed.Fields = append(RichEmbed.Fields, discordEmbedField{
-					Name:  fmt.Sprintf("[%s]: %s on %s", strings.ToUpper(status), alert.Labels["alertname"], realname),
-					Value: alert.Annotations.Description,
-				})
-			}
-
-			DO.Embeds = []discordEmbed{RichEmbed}
-
-			DOD, _ := json.Marshal(DO)
-			http.Post(*whURL, "application/json", bytes.NewReader(DOD))
-		}
+		sendWebhook(&amo)
 	}))
 }
