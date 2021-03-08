@@ -16,9 +16,9 @@ import (
 
 // Discord color values
 const (
-	ColorRed   = 10038562
-	ColorGreen = 3066993
-	ColorGrey  = 9807270
+	ColorRed   = 0x992D22
+	ColorGreen = 0x2ECC71
+	ColorGrey  = 0x95A5A6
 )
 
 type alertManAlert struct {
