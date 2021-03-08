@@ -70,13 +70,12 @@ type discordEmbedField struct {
 
 const defaultListenAddress = "127.0.0.1:9094"
 
+var (
+	whURL         = flag.String("webhook.url", os.Getenv("DISCORD_WEBHOOK"), "Discord WebHook URL.")
+	listenAddress = flag.String("listen.address", os.Getenv("LISTEN_ADDRESS"), "Address:Port to listen on.")
+)
+
 func main() {
-	envWhURL := os.Getenv("DISCORD_WEBHOOK")
-	whURL := flag.String("webhook.url", envWhURL, "Discord WebHook URL.")
-
-	envListenAddress := os.Getenv("LISTEN_ADDRESS")
-	listenAddress := flag.String("listen.address", envListenAddress, "Address:Port to listen on.")
-
 	flag.Parse()
 
 	if *whURL == "" {
