@@ -136,6 +136,33 @@ func sendWebhook(amo *alertManOut) {
 	}
 }
 
+func sendRawPromAlertWarn() {
+	badString := `This program is suppose to be fed by alertmanager.` + "\n" +
+		`It is not a replacement for alertmanager, it is a ` + "\n" +
+		`webhook target for it. Please read the README.md  ` + "\n" +
+		`for guidance on how to configure it for alertmanager` + "\n" +
+		`or https://prometheus.io/docs/alerting/latest/configuration/#webhook_config`
+
+	log.Print(`/!\ -- You have misconfigured this software -- /!\`)
+	log.Print(`--- --                                      -- ---`)
+	log.Print(badString)
+
+	DO := discordOut{
+		Content: "",
+		Embeds: []discordEmbed{
+			{
+				Title:       "You have misconfigured this software",
+				Description: badString,
+				Color:       ColorGrey,
+				Fields:      []discordEmbedField{},
+			},
+		},
+	}
+
+	DOD, _ := json.Marshal(DO)
+	http.Post(*whURL, "application/json", bytes.NewReader(DOD))
+}
+
 func main() {
 	flag.Parse()
 	checkWhURL(*whURL)
@@ -157,30 +184,7 @@ func main() {
 		err = json.Unmarshal(b, &amo)
 		if err != nil {
 			if isRawPromAlert(b) {
-				badString := `This program is suppose to be fed by alertmanager.` + "\n" +
-					`It is not a replacement for alertmanager, it is a ` + "\n" +
-					`webhook target for it. Please read the README.md  ` + "\n" +
-					`for guidance on how to configure it for alertmanager` + "\n" +
-					`or https://prometheus.io/docs/alerting/latest/configuration/#webhook_config`
-
-				log.Print(`/!\ -- You have misconfigured this software -- /!\`)
-				log.Print(`--- --                                      -- ---`)
-				log.Print(badString)
-
-				DO := discordOut{
-					Content: "",
-					Embeds: []discordEmbed{
-						{
-							Title:       "You have misconfigured this software",
-							Description: badString,
-							Color:       ColorGrey,
-							Fields:      []discordEmbedField{},
-						},
-					},
-				}
-
-				DOD, _ := json.Marshal(DO)
-				http.Post(*whURL, "application/json", bytes.NewReader(DOD))
+				sendRawPromAlertWarn()
 				return
 			}
 
@@ -193,6 +197,7 @@ func main() {
 
 			return
 		}
+
 		sendWebhook(&amo)
 	}))
 }
