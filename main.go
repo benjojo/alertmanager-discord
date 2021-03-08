@@ -75,25 +75,27 @@ var (
 	listenAddress = flag.String("listen.address", os.Getenv("LISTEN_ADDRESS"), "Address:Port to listen on.")
 )
 
-func main() {
-	flag.Parse()
-
-	if *whURL == "" {
+func checkWhURL(whURL string) {
+	if whURL == "" {
 		log.Fatalf("Environment variable 'DISCORD_WEBHOOK' or CLI parameter 'webhook.url' not found.")
 	}
-
-	if *listenAddress == "" {
-		*listenAddress = defaultListenAddress
-	}
-
-	_, err := url.Parse(*whURL)
+	_, err := url.Parse(whURL)
 	if err != nil {
 		log.Fatalf("The Discord WebHook URL doesn't seem to be a valid URL.")
 	}
 
 	re := regexp.MustCompile(`https://discord(?:app)?.com/api/webhooks/[0-9]{18}/[a-zA-Z0-9_-]+`)
-	if ok := re.Match([]byte(*whURL)); !ok {
+	if ok := re.Match([]byte(whURL)); !ok {
 		log.Printf("The Discord WebHook URL doesn't seem to be valid.")
+	}
+}
+
+func main() {
+	flag.Parse()
+	checkWhURL(*whURL)
+
+	if *listenAddress == "" {
+		*listenAddress = defaultListenAddress
 	}
 
 	log.Printf("Listening on: %s", *listenAddress)
