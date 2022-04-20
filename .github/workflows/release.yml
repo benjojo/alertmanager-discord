@@ -24,6 +24,9 @@ jobs:
             os: darwin
           -
             arch: arm64
+            os: darwin
+          -
+            arch: arm64
             os: windows
     steps:
     - uses: actions/checkout@v2
