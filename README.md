@@ -69,7 +69,7 @@ latest_release=$(curl -s https://api.github.com/repos/benjojo/alertmanager-disco
 # download latest tarball
 curl -L \
   -o ./alertmanager-discord-${latest_release}-linux-amd64.tar.gz \
-  https://github.com/grenade/alertmanager-discord/releases/download/${latest_release}/alertmanager-discord-${latest_release}-linux-amd64.tar.gz
+  https://github.com/benjojo/alertmanager-discord/releases/download/${latest_release}/alertmanager-discord-${latest_release}-linux-amd64.tar.gz
 
 # extract binary from tarball to ~/.local/bin/alertmanager-discord
 tar xfz \
