@@ -84,7 +84,7 @@ func checkWhURL(whURL string) {
 		log.Fatalf("The Discord WebHook URL doesn't seem to be a valid URL.")
 	}
 
-	re := regexp.MustCompile(`https://discord(?:app)?.com/api/webhooks/[0-9]{18}/[a-zA-Z0-9_-]+`)
+	re := regexp.MustCompile(`https://discord(?:app)?.com/api/webhooks/[0-9]{18,19}/[a-zA-Z0-9_-]+`)
 	if ok := re.Match([]byte(whURL)); !ok {
 		log.Printf("The Discord WebHook URL doesn't seem to be valid.")
 	}
