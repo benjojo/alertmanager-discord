@@ -54,6 +54,26 @@ receivers:
   - url: 'http://localhost:9094'
 ```
 
-## Docker
+## Installation
+
+### Docker
 
 If you run a fancy docker/k8s infra, you can find the docker hub repo here: https://hub.docker.com/r/benjojo/alertmanager-discord/
+
+### Linux (amd64)
+
+```bash
+# determine latest release (requires jq)
+latest_release=$(curl -s https://api.github.com/repos/benjojo/alertmanager-discord/releases/latest | jq -r .tag_name)
+
+# download latest tarball
+curl -L \
+  -o ./alertmanager-discord-${latest_release}-linux-amd64.tar.gz \
+  https://github.com/benjojo/alertmanager-discord/releases/download/${latest_release}/alertmanager-discord-${latest_release}-linux-amd64.tar.gz
+
+# extract binary from tarball to ~/.local/bin/alertmanager-discord
+tar xfz \
+  alertmanager-discord-${latest_release}-linux-amd64.tar.gz \
+  -C ~/.local/bin \
+  alertmanager-discord
+```
