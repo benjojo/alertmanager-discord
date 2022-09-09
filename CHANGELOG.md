@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/elesto-dao/alertmanager-discord/compare/v1.0.1...v1.0.2) (2022-09-09)
+
+
+### Bug Fixes
+
+* dockerfile fix ([fcf7fcc](https://github.com/elesto-dao/alertmanager-discord/commit/fcf7fccac30e82a1131078420f8e55e445025100))
+
 ## [1.0.1](https://github.com/elesto-dao/alertmanager-discord/compare/v1.0.0...v1.0.1) (2022-09-09)
 
 
