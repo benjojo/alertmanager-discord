@@ -1,0 +1,62 @@
+project_name: alertmanager-discord
+before:
+  hooks:
+    - go mod tidy
+builds:
+  - id: "alertmanager-discord"
+    main: ./main.go
+    binary: alertmanager-discord
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+changelog:
+  skip: false
+  use: git
+  groups:
+    - title: Features
+      regexp: "^.*feat[(\\w)]*:+.*$"
+      order: 0
+    - title: 'Bug fixes'
+      regexp: "^.*fix[(\\w)]*:+.*$"
+      order: 1
+    - title: Others
+      order: 999
+  filters:
+    exclude:
+      - '^docs:'
+      - '^chore:'
+dockers:
+  - use: buildx
+    goos: linux
+    goarch: amd64
+    image_templates:
+      - "ghcr.io/elesto-dao/{{ .ProjectName }}:{{ .Version }}-amd64"
+    build_flag_templates:
+      - "--pull"
+      - "--platform=linux/amd64"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.title={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+  - use: buildx
+    goos: linux
+    goarch: arm64
+    image_templates:
+      - "ghcr.io/elesto-dao/{{ .ProjectName }}:{{ .Version }}-arm64v8"
+    build_flag_templates:
+      - "--pull"
+      - "--platform=linux/arm64"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.title={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+docker_manifests:
+  - name_template: ghcr.io/elesto-dao/{{ .ProjectName }}:{{ .Version }}
+    image_templates:
+      - ghcr.io/elesto-dao/{{ .ProjectName }}:{{ .Version }}-amd64
+      - ghcr.io/elesto-dao/{{ .ProjectName }}:{{ .Version }}-arm64v8

@@ -1,0 +1,38 @@
+---
+name: PR Validation
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  validate-commits:
+    name: Validate Conventional Commits
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Commitsar check
+        uses: docker://aevea/commitsar:0.19.0
+        with:
+          config: .github/.commitsar.yml
+  run-reviewdog:
+    name: Run ReviewDog
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup ssh-agent
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.ELESTO_DEPLOY_KEY }}
+      - name: ReviewDog - GolangCI Lint
+        uses: reviewdog/action-golangci-lint@v2
+        with:
+          go_version_file: go.mod
+          tool_name: GolangCI Lint
+          golangci_lint_flags: --config=.github/.golangci.yaml
+          fail_on_error: true

@@ -1,0 +1,61 @@
+---
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - id: release-please
+        name: Release Please
+        uses: google-github-actions/release-please-action@v3
+        with:
+          release-type: go
+          package-name: alertmanager-discord
+          changelog-types: >-
+            [
+              {"type":"feat","section":"Features","hidden":false},
+              {"type":"fix","section":"Bug Fixes","hidden":false},
+              {"type":"chore","section":"Miscellaneous","hidden":true}
+            ]
+      - name: Checkout
+        uses: actions/checkout@v3
+        if: steps.release-please.outputs.release_created
+        with:
+          fetch-depth: 0
+      - name: Setup ssh-agent
+        uses: webfactory/ssh-agent@v0.5.4
+        if: steps.release-please.outputs.release_created
+        with:
+          ssh-private-key: ${{ secrets.ELESTO_DEPLOY_KEY }}
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        if: steps.release-please.outputs.release_created
+        with:
+          go-version-file: go.mod
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+        if: steps.release-please.outputs.release_created
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+        if: steps.release-please.outputs.release_created
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
+        if: steps.release-please.outputs.release_created
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v3
+        if: steps.release-please.outputs.release_created
+        with:
+          args: release --rm-dist --config .github/.goreleaser.yaml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GOPRIVATE: github.com/${{ env.GITHUB_REPOSITORY_OWNER }}
