@@ -40,8 +40,8 @@ linters:
     - gocritic # Provides diagnostics that check for bugs, performance and style issues.
     - gocyclo # Computes and checks the cyclomatic complexity of functions
     - godot # Check if comments end in a period
-    - goimports # In addition to fixing imports, goimports also formats your code in the same style as gofmt.
-    - gomnd # An analyzer to detect magic numbers.
+#    - goimports # In addition to fixing imports, goimports also formats your code in the same style as gofmt.
+#    - gomnd # An analyzer to detect magic numbers.
     - gomoddirectives # Manage the use of 'replace', 'retract', and 'excludes' directives in go.mod.
     - gomodguard # Allow and block list linter for direct Go module dependencies. This is different from depguard where there are different block types for example version constraints and module recommendations.
     - goprintffuncname # Checks that printf-like functions are named with f at the end
@@ -52,7 +52,7 @@ linters:
     - nestif # Reports deeply nested if statements
     - nilerr # Finds the code that returns nil even if it checks that the error is not nil.
     - nilnil # Checks that there is no simultaneous return of nil error and an invalid value.
-    - noctx # noctx finds sending http request without context.Context
+#    - noctx # noctx finds sending http request without context.Context
     - nolintlint # Reports ill-formed or insufficient nolint directives
     - nonamedreturns # Reports all named returns
     - nosprintfhostport # Checks for misuse of Sprintf to construct a host with port in a URL.
