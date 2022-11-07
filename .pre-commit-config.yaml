@@ -22,6 +22,7 @@ repos:
       - id: check-vcs-permalinks
       - id: trailing-whitespace
       - id: end-of-file-fixer
+        exclude: "deploy/helm/README.md"
 
   - repo: https://github.com/syntaqx/git-hooks
     rev: "v0.0.17"
@@ -43,6 +44,13 @@ repos:
       - id: go-unit-tests
       - id: go-build
       - id: go-mod-tidy
+
+  - repo: https://github.com/norwoodj/helm-docs
+    rev: v1.2.0
+    hooks:
+      - id: helm-docs
+        args:
+          - --chart-search-root=deploy/helm
 
 ci:
   autoupdate_schedule: quarterly

@@ -3,7 +3,7 @@ replicaCount: 1
 image:
   repository: speckle/alertmanager-discord
   pullPolicy: Always
-  # Overrides the image tag whose default is the chart appVersion.
+  # -- Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
 
 imagePullSecrets: []
@@ -11,11 +11,11 @@ nameOverride: ""
 fullnameOverride: ""
 
 serviceAccount:
-  # Specifies whether a service account should be created
+  # -- Specifies whether a service account should be created
   create: true
-  # Annotations to add to the service account
+  # -- Annotations to add to the service account
   annotations: {}
-  # The name of the service account to use.
+  # -- The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
@@ -34,6 +34,7 @@ securityContext:
 
 service:
   type: ClusterIP
+  # -- The port to which alertmanager should push alerts
   port: 9094
 
 resources:
@@ -52,9 +53,12 @@ affinity: {}
 
 server:
   discordWebhookSecret:
-    name: discord-webhook # name of the Kubernetes Secret containing the Discord webhook url. Must be in the same namespace as this helm chart is deployed.
-    key: "discord-uri" # key within the Opaque Kubernetes Secret
+    # -- name of the Kubernetes Secret containing the Discord webhook url. Must be in the same namespace as this helm chart is deployed.
+    name: discord-webhook
+    # -- key within the Opaque Kubernetes Secret
+    key: "discord-uri"
 
 ciliumNetworkPolicy:
   enabled: false
-  alertManagerSelectorLabels: {} # the labels applied to the alertmanager which will send data to this service. If Cilium Network Policy is enabled, ingress to this service is only allowed from a pod matching these labels.
+  # -- the labels applied to the alertmanager which will send data to this service. If Cilium Network Policy is enabled, ingress to this service is only allowed from a pod matching these labels.
+  alertManagerSelectorLabels: {}

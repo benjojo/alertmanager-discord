@@ -1,12 +1,12 @@
 # alertmanager-discord
 
-Give this a webhook (with the DISCORD_WEBHOOK environment variable) and point it as a webhook on alertmanager, and it will post your alerts into a discord channel for you as they trigger:
+This is a webserver that accepts webhooks from AlertManager. It will post your Prometheus alert notifications into a Discord channel as they trigger:
 
 ![](/.github/demo-new.png)
 
 ## Warning
 
-This program is not a replacement to alertmanager, it accepts webhooks from alertmanager, not prometheus.
+This program is not a replacement to alertmanager, it accepts webhooks from alertmanager, not Prometheus.
 
 The standard "dataflow" should be:
 
@@ -25,7 +25,7 @@ alerting:                 receivers:
 
 ```
 
-## Example alertmanager config:
+## Example alertmanager config
 
 ```
 global:
@@ -53,6 +53,26 @@ receivers:
   - url: 'http://localhost:9094'
 ```
 
-## Docker
+## Deployment
 
-If you run a fancy docker/k8s infra, you can find the docker hub repo here: https://hub.docker.com/r/benjojo/alertmanager-discord/
+### Docker
+
+If you wish to deploy this to docker infra, you can find the docker hub repo here: https://hub.docker.com/r/speckle/alertmanager-discord/
+
+### Kubernetes Helm Chart
+
+If you wish to deploy this to Kubernetes, this repository contains a Helm Chart.
+
+```shell
+helm upgrade --install \
+--create-namespace \
+--namespace alertmanager-discord
+alertmanager-discord \
+./deploy/helm
+```
+
+You can optionally also provide a values yaml file, `--values ./your-values.yaml`, to override the default values.
+
+## Acknowledgements
+
+This repository is forked from https://github.com/benjojo/alertmanager-discord under the Apache 2.0 license
