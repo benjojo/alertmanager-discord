@@ -4,15 +4,14 @@ workflows:
   version: 2
   build-image:
     jobs:
-      # - pre-commit:
-      #     filters:
-      #       tags: &filter-all-tags # run for all tags
-      #         only: /.*/
-
-      - docker-build:
+      - pre-commit:
           filters:
             tags: &filter-all-tags # run for all tags
               only: /.*/
+
+      - docker-build:
+          filters:
+            tags: *filter-all-tags
             branches:
               ignore:
                 - main
@@ -27,46 +26,46 @@ workflows:
                 - main
 
 jobs:
-  # pre-commit:
-  #   parameters:
-  #     config_file:
-  #       default: ./.pre-commit-config.yaml
-  #       description: Optional, path to pre-commit config file.
-  #       type: string
-  #     cache_prefix:
-  #       default: ""
-  #       description: |
-  #         Optional cache prefix to be used on CircleCI. Can be used for cache busting or to ensure multiple jobs use different caches.
-  #       type: string
-  #   docker:
-  #     - image: speckle/pre-commit-runner:latest
-  #   resource_class: large
-  #   working_directory: &workingdir /tmp/ci
-  #   steps:
-  #     - checkout
-  #     - restore_cache:
-  #         keys:
-  #           - cache-pre-commit-<<parameters.cache_prefix>>-{{ checksum "<<parameters.config_file>>" }}
-  #     - run:
-  #         name: Install pre-commit hooks
-  #         command: pre-commit install-hooks --config <<parameters.config_file>>
-  #     - save_cache:
-  #         key: cache-pre-commit-<<parameters.cache_prefix>>-{{ checksum "<<parameters.config_file>>" }}
-  #         paths:
-  #           - ~/.cache/pre-commit
-  #     - run:
-  #         name: Run pre-commit
-  #         command: pre-commit run --all-files --config <<parameters.config_file>>
-  #     - run:
-  #         command: git --no-pager diff
-  #         name: git diff
-  #         when: on_fail
+  pre-commit:
+    parameters:
+      config_file:
+        default: ./.pre-commit-config.yaml
+        description: Optional, path to pre-commit config file.
+        type: string
+      cache_prefix:
+        default: ""
+        description: |
+          Optional cache prefix to be used on CircleCI. Can be used for cache busting or to ensure multiple jobs use different caches.
+        type: string
+    docker:
+      - image: speckle/pre-commit-runner:latest
+    resource_class: large
+    working_directory: &workingdir /tmp/ci
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - cache-pre-commit-<<parameters.cache_prefix>>-{{ checksum "<<parameters.config_file>>" }}
+      - run:
+          name: Install pre-commit hooks
+          command: pre-commit install-hooks --config <<parameters.config_file>>
+      - save_cache:
+          key: cache-pre-commit-<<parameters.cache_prefix>>-{{ checksum "<<parameters.config_file>>" }}
+          paths:
+            - ~/.cache/pre-commit
+      - run:
+          name: Run pre-commit
+          command: pre-commit run --all-files --config <<parameters.config_file>>
+      - run:
+          command: git --no-pager diff
+          name: git diff
+          when: on_fail
 
   docker-build-and-publish:
     docker: &docker-image
       - image: cimg/base:2022.04
     resource_class: &docker-resource-class large
-    working_directory: &workingdir /tmp/ci
+    working_directory: *workingdir
     steps:
       - checkout
       - setup_remote_docker: &remote-docker
