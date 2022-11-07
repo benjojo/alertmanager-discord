@@ -11,7 +11,8 @@ workflows:
 
       - docker-build:
           filters:
-            tags: *filter-all-tags
+            tags: &filter-all-tags # run for all tags
+              only: /.*/
             branches:
               ignore:
                 - main
