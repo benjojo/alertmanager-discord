@@ -1,0 +1,11 @@
+apiVersion: v2
+name: alertmanager-discord
+description: A Helm chart to deploy alertmanager-discord to Kubernetes
+type: application
+
+# This is the chart version. This version number should be incremented each time you make changes
+# to the chart and its templates, including the app version.
+# Versions are expected to follow Semantic Versioning (https://semver.org/)
+version: 0.1.0
+# This is the version number of the application being deployed.
+appVersion: "0.1.0"

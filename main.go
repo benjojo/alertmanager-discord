@@ -176,6 +176,21 @@ func main() {
 		http.ListenAndServe(*listenAddress, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			log.Printf("%s - [%s] %s", r.Host, r.Method, r.URL.RawPath)
 
+			if r.URL.Path == "/readiness" {
+				log.Print("Readiness probe encountered.")
+				return
+			}
+
+			if r.URL.Path == "/liveness" {
+				log.Print("Liveness probe encountered.")
+				return
+			}
+
+			if r.URL.Path == "/favicon.ico" {
+				log.Print("Favicon request encountered.")
+				return
+			}
+
 			b, err := ioutil.ReadAll(r.Body)
 			if err != nil {
 				panic(err)

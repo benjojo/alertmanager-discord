@@ -1,0 +1,24 @@
+{{- if .Values.ciliumNetworkPolicy.enabled -}}
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: alertmanager-discord
+spec:
+  endpointSelector:
+    matchLabels:
+      {{- include "alertmanager-discord.selectorLabels" . | nindent 6 }}
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            {{- .Values.ciliumNetworkPolicy.alertManagerSelectorLabels | toYaml | nindent 12 }}
+      toPorts:
+        - ports:
+            - port: "{{ .Values.service.port }}"
+  egress:
+    - toFQDNs:
+        - matchPattern: "discord.com"
+        - matchPattern: "discordapp.com"
+      toPorts:
+        - ports:
+            - port: "443"
+{{- end -}}
