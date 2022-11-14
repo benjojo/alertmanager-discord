@@ -38,7 +38,7 @@ repos:
     rev: "v0.5.1"
     hooks:
       - id: go-fmt
-      - id: go-vet
+      # - id: go-vet
       - id: no-go-testing
       - id: go-critic
       - id: go-unit-tests

@@ -46,12 +46,12 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           env:
-            - name: DISCORD_WEBHOOK
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.server.discordWebhookSecret.name }}
-                  key: {{ .Values.server.discordWebhookSecret.key }}
-                  optional: false
+            - name: CONFIGURATION_FILE_PATH
+              value: {{ printf "/etc/alertmanager-discord/%s"  .Values.server.configuration.key }}
+          volumeMounts:
+            - name: alertmanager-discord-config
+              mountPath: /etc/alertmanager-discord
+              readOnly: true
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -64,3 +64,8 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      volumes:
+        - name: alertmanager-discord-config
+          secret:
+            secretName: {{ .Values.server.configuration.name }}
+            optional: false

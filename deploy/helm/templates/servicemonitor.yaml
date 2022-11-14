@@ -1,0 +1,12 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "alertmanager-discord.fullname" . }}
+  labels:
+    {{- include "alertmanager-discord.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "alertmanager-discord.selectorLabels" . | nindent 6 }}
+  endpoints:
+  - port: http

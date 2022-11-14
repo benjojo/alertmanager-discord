@@ -52,11 +52,11 @@ tolerations: []
 affinity: {}
 
 server:
-  discordWebhookSecret:
-    # -- name of the Kubernetes Secret containing the Discord webhook url. Must be in the same namespace as this helm chart is deployed.
+  configuration:
+    # -- name of the Kubernetes Secret containing the configuration file, will be mounted to the container. Must be in the same namespace as this helm chart is deployed.
     name: discord-webhook
-    # -- key within the Opaque Kubernetes Secret
-    key: "discord-uri"
+    key: config.yaml
+    # within the config.yaml data, it should be yaml formatted with the key `discord_webhook_url`, and optionally keys `listen_address` & `max_backoff_time_seconds`. An example of the data expected can be found at ./test/test-config.yaml
 
 ciliumNetworkPolicy:
   enabled: false

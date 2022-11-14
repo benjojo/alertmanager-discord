@@ -29,8 +29,8 @@ A Helm chart to deploy alertmanager-discord to Kubernetes
 | securityContext.readOnlyRootFilesystem | bool | `true` |  |
 | securityContext.runAsNonRoot | bool | `true` |  |
 | securityContext.runAsUser | int | `1000` |  |
-| server.discordWebhookSecret.key | string | `"discord-uri"` | key within the Opaque Kubernetes Secret |
-| server.discordWebhookSecret.name | string | `"discord-webhook"` | name of the Kubernetes Secret containing the Discord webhook url. Must be in the same namespace as this helm chart is deployed. |
+| server.configuration.key | string | `"config.yaml"` |  |
+| server.configuration.name | string | `"discord-webhook"` | name of the Kubernetes Secret containing the configuration file, will be mounted to the container. Must be in the same namespace as this helm chart is deployed. |
 | service.port | int | `9094` | The port to which alertmanager should push alerts |
 | service.type | string | `"ClusterIP"` |  |
 | serviceAccount.annotations | object | `{}` | Annotations to add to the service account |
