@@ -11,5 +11,5 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args: ['{{ include "alertmanager-discord.fullname" . }}:{{ .Values.service.port }}']
+      args: ['{{ include "alertmanager-discord.fullname" . }}:{{ .Values.service.port }}/readiness']
   restartPolicy: Never
