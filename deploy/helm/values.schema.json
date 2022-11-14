@@ -182,7 +182,7 @@
         "server": {
             "type": "object",
             "properties": {
-                "discordWebhookSecret": {
+                "configuration": {
                     "type": "object",
                     "properties": {
                         "name": {

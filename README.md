@@ -35,11 +35,11 @@ alerting:                 receivers:
 - Liveness and Readiness probes, at `/liveness` and `/readiness`.
 - Unit and Integration tests, approx 90% coverage.
 - Structured Logging.
+- Prometheus metrics at `/metrics`.
 
 ### Roadmap
 
 - Template Discord messages
-- Prometheus metrics at `/metrics`.
 - REST API documented with OpenAPI (Swagger) specification.
 
 ## Example alertmanager config
@@ -72,6 +72,22 @@ receivers:
 
 ## Deployment
 
+### Running binary
+
+```shell
+go run . --discord_webhook_url=https://discord.com/api/webhooks/123456789123456789/abc
+```
+
+You may instead provide the Discord webhook url by environment variable, `DISCORD_WEBHOOK_URL`, or via a configuration file:
+
+```yaml
+discord_webhook_url: https://discord.com/api/webhooks/123456789123456789/abc
+```
+
+```shell
+go run . --configuration_file_path=/path/to/your/config.yaml
+```
+
 ### Docker
 
 If you wish to deploy this to docker infra, you can find the docker hub repo here: https://hub.docker.com/r/speckle/alertmanager-discord/
@@ -79,6 +95,18 @@ If you wish to deploy this to docker infra, you can find the docker hub repo her
 ### Kubernetes Helm Chart
 
 If you wish to deploy this to Kubernetes, this repository contains a Helm Chart.
+
+Firstly, please deploy a Secret with your configuration information, the discord webhook url is required.:
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: discord-config
+data:
+  "config.yaml": |
+    discord_webhook_url: https://discord.com/api/webhooks/123456789123456789/abc
+```
 
 ```shell
 helm upgrade --install \
