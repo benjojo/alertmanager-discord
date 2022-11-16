@@ -6,10 +6,7 @@ const (
 )
 
 type Alert struct {
-	Annotations struct {
-		Description string `json:"description"`
-		Summary     string `json:"summary"`
-	} `json:"annotations"`
+	Annotations  map[string]string `json:"annotations"`
 	EndsAt       string            `json:"endsAt"`
 	GeneratorURL string            `json:"generatorURL"`
 	Labels       map[string]string `json:"labels"`

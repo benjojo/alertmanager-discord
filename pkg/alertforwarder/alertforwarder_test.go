@@ -227,14 +227,13 @@ func Test_TransformAndForward_StatusResolved_HappyPath(t *testing.T) {
 }
 
 // alert with a label 'instance'='localhost' and 'exported_instance' label is set, should have the instance replaced by 'exported_instance'
-func Test_TransformAndForward_ExportedInstance_HappyPath(t *testing.T) {
+func Test_TransformAndForward_Annotations_AreAddedAsEmbedFields_HappyPath(t *testing.T) {
 	ao := alertmanager.Out{
 		Alerts: []alertmanager.Alert{
 			{
 				Status: alertmanager.StatusFiring,
-				Labels: map[string]string{
-					"instance":          "localhost",
-					"exported_instance": "exported_instance_value",
+				Annotations: map[string]string{
+					"environment": "development",
 				},
 			},
 		},
@@ -252,7 +251,7 @@ func Test_TransformAndForward_ExportedInstance_HappyPath(t *testing.T) {
 	assert.Equal(t, 1, len(do.Embeds), "Discord message embed length")
 	assert.Equal(t, 10038562, do.Embeds[0].Color, "Discord message embed color")
 	assert.Equal(t, 1, len(do.Embeds[0].Fields), "Discord message embed fields length")
-	assert.Contains(t, do.Embeds[0].Fields[0].Name, "exported_instance_value", "Discord message embed field Name should contain instance")
+	assert.Contains(t, do.Embeds[0].Fields[0].Value, "development", "Discord message embed field Name should contain attribute")
 	assert.Equal(t, "", do.Content, "Discord message content")
 }
 

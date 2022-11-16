@@ -11,8 +11,12 @@ import (
 func TranslateAlertManagerToDiscord(status string, amo *alertmanager.Out, alerts []alertmanager.Alert) discord.Out {
 	DO := discord.Out{}
 
+	if amo.CommonAnnotations.Summary != "" {
+		DO.Content = fmt.Sprintf(" === %s === \n", amo.CommonAnnotations.Summary)
+	}
+
 	RichEmbed := discord.Embed{
-		Title:       fmt.Sprintf("[%s:%d] %s", strings.ToUpper(status), len(alerts), amo.CommonLabels.Alertname),
+		Title:       fmt.Sprintf("[%s: %d] %s", strings.ToUpper(status), len(alerts), amo.CommonLabels.Alertname),
 		Description: amo.CommonAnnotations.Summary,
 		Color:       discord.ColorGrey,
 		Fields:      []discord.EmbedField{},
@@ -25,19 +29,14 @@ func TranslateAlertManagerToDiscord(status string, amo *alertmanager.Out, alerts
 		RichEmbed.Color = discord.ColorGreen
 	}
 
-	if amo.CommonAnnotations.Summary != "" {
-		DO.Content = fmt.Sprintf(" === %s === \n", amo.CommonAnnotations.Summary)
-	}
-
 	for _, alert := range alerts {
-		realname := alert.Labels["instance"]
-		if strings.Contains(realname, "localhost") && alert.Labels["exported_instance"] != "" {
-			realname = alert.Labels["exported_instance"]
+		var annotations strings.Builder
+		for key, val := range alert.Annotations {
+			annotations.WriteString(fmt.Sprintf("%s: %s\n", key, val))
 		}
-
 		RichEmbed.Fields = append(RichEmbed.Fields, discord.EmbedField{
-			Name:  fmt.Sprintf("[%s]: %s on %s", strings.ToUpper(status), alert.Labels["alertname"], realname),
-			Value: alert.Annotations.Description,
+			Name:  "Alert details",
+			Value: annotations.String(),
 		})
 	}
 
