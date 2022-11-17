@@ -30,13 +30,19 @@ func TranslateAlertManagerToDiscord(status string, amo *alertmanager.Out, alerts
 	}
 
 	for _, alert := range alerts {
-		var annotations strings.Builder
+		var details strings.Builder
+		details.WriteString("===Annotations===\n")
 		for key, val := range alert.Annotations {
-			annotations.WriteString(fmt.Sprintf("%s: %s\n", key, val))
+			details.WriteString(fmt.Sprintf("'%s': '%s'\n", key, val))
 		}
+		details.WriteString("===Labels===\n")
+		for key, val := range alert.Labels {
+			details.WriteString(fmt.Sprintf("'%s': '%s'\n", key, val))
+		}
+
 		RichEmbed.Fields = append(RichEmbed.Fields, discord.EmbedField{
 			Name:  "Alert details",
-			Value: annotations.String(),
+			Value: details.String(),
 		})
 	}
 
