@@ -24,6 +24,8 @@ workflows:
             branches:
               only:
                 - main
+          requires:
+            - pre-commit
 
 jobs:
   pre-commit:
