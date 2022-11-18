@@ -60,11 +60,11 @@ func (amds *AlertManagerDiscordServer) ListenAndServe(webhookUrl, listenAddress 
 	mux.HandleFunc("/", transformAndForwardWithInstrumentation)
 
 	mux.HandleFunc("/readiness", func(w http.ResponseWriter, r *http.Request) {
-		log.Info().Msg("Readiness probe encountered.")
+		log.Debug().Msg("Readiness probe encountered.")
 	})
 
 	mux.HandleFunc("/liveness", func(w http.ResponseWriter, r *http.Request) {
-		log.Info().Msg("Liveness probe encountered.")
+		log.Debug().Msg("Liveness probe encountered.")
 	})
 
 	mux.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {

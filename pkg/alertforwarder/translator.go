@@ -2,6 +2,7 @@ package alertforwarder
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/specklesystems/alertmanager-discord/pkg/alertmanager"
@@ -32,12 +33,29 @@ func TranslateAlertManagerToDiscord(status string, amo *alertmanager.Out, alerts
 	for _, alert := range alerts {
 		var details strings.Builder
 		details.WriteString("===Annotations===\n")
-		for key, val := range alert.Annotations {
-			details.WriteString(fmt.Sprintf("'%s': '%s'\n", key, val))
+
+		// sort into alphabetical order
+		annotationKeys := make([]string, 0, len(alert.Annotations))
+		for key := range alert.Annotations {
+			annotationKeys = append(annotationKeys, key)
 		}
+		sort.Strings(annotationKeys)
+
+		for _, key := range annotationKeys {
+			details.WriteString(fmt.Sprintf("'%s': '%s'\n", key, alert.Annotations[key]))
+		}
+
 		details.WriteString("===Labels===\n")
-		for key, val := range alert.Labels {
-			details.WriteString(fmt.Sprintf("'%s': '%s'\n", key, val))
+
+		// sort into alphabetical order
+		labelKeys := make([]string, 0, len(alert.Labels))
+		for key := range alert.Labels {
+			labelKeys = append(labelKeys, key)
+		}
+		sort.Strings(labelKeys)
+
+		for _, key := range labelKeys {
+			details.WriteString(fmt.Sprintf("'%s': '%s'\n", key, alert.Labels[key]))
 		}
 
 		RichEmbed.Fields = append(RichEmbed.Fields, discord.EmbedField{
