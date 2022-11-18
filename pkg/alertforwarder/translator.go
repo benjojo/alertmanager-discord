@@ -57,7 +57,7 @@ func TranslateAlertManagerToDiscord(status string, amo *alertmanager.Out, alerts
 				// if there is a summary, it is already the field name so no need to repeat it
 				continue
 			}
-			details.WriteString(fmt.Sprintf("%s: %s\n", key, alert.Annotations[key]))
+			details.WriteString(fmt.Sprintf("\t%s: %s\n", key, alert.Annotations[key]))
 		}
 
 		details.WriteString("Labels:\n")
@@ -74,7 +74,7 @@ func TranslateAlertManagerToDiscord(status string, amo *alertmanager.Out, alerts
 				// if these keys exist, we have already added them to the field name
 				continue
 			}
-			details.WriteString(fmt.Sprintf("  %s: %s\n", key, alert.Labels[key]))
+			details.WriteString(fmt.Sprintf("\t%s: %s\n", key, alert.Labels[key]))
 		}
 
 		RichEmbed.Fields = append(RichEmbed.Fields, discord.EmbedField{
