@@ -32,7 +32,7 @@ func TranslateAlertManagerToDiscord(status string, amo *alertmanager.Out, alerts
 
 	for _, alert := range alerts {
 		var details strings.Builder
-		details.WriteString("===Annotations===\n")
+		details.WriteString("Annotations:\n")
 
 		// sort into alphabetical order
 		annotationKeys := make([]string, 0, len(alert.Annotations))
@@ -42,10 +42,10 @@ func TranslateAlertManagerToDiscord(status string, amo *alertmanager.Out, alerts
 		sort.Strings(annotationKeys)
 
 		for _, key := range annotationKeys {
-			details.WriteString(fmt.Sprintf("'%s': '%s'\n", key, alert.Annotations[key]))
+			details.WriteString(fmt.Sprintf("%s: %s\n", key, alert.Annotations[key]))
 		}
 
-		details.WriteString("===Labels===\n")
+		details.WriteString("Labels:\n")
 
 		// sort into alphabetical order
 		labelKeys := make([]string, 0, len(alert.Labels))
@@ -55,7 +55,7 @@ func TranslateAlertManagerToDiscord(status string, amo *alertmanager.Out, alerts
 		sort.Strings(labelKeys)
 
 		for _, key := range labelKeys {
-			details.WriteString(fmt.Sprintf("'%s': '%s'\n", key, alert.Labels[key]))
+			details.WriteString(fmt.Sprintf("  %s: %s\n", key, alert.Labels[key]))
 		}
 
 		RichEmbed.Fields = append(RichEmbed.Fields, discord.EmbedField{
