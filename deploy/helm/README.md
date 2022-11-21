@@ -29,7 +29,7 @@ A Helm chart to deploy alertmanager-discord to Kubernetes
 | securityContext.readOnlyRootFilesystem | bool | `true` |  |
 | securityContext.runAsNonRoot | bool | `true` |  |
 | securityContext.runAsUser | int | `1000` |  |
-| server.configuration.key | string | `"config.yaml"` |  |
+| server.configuration.key | string | `"config.yaml"` | the key within the Kubernetes Secret. This key is expected to be a filename, as it will for the path for the configuration file when mounted to the container. |
 | server.configuration.name | string | `"discord-config"` | name of the Kubernetes Secret containing the configuration file, will be mounted to the container. Must be in the same namespace as this helm chart is deployed. |
 | service.port | int | `9094` | The port to which alertmanager should push alerts |
 | service.type | string | `"ClusterIP"` |  |

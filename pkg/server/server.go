@@ -15,7 +15,9 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-const DefaultListenAddress = "0.0.0.0:9094"
+const (
+	DefaultListenAddress = "0.0.0.0:9094"
+)
 const (
 	FaviconPath   = "/favicon.ico"
 	LivenessPath  = "/liveness"

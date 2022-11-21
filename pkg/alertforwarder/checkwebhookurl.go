@@ -17,13 +17,10 @@ func CheckWebhookURL(webhookURL string) (bool, *url.URL, error) {
 
 	parsedUrl, err := url.Parse(webhookURL)
 	if err != nil {
-		return false, &url.URL{}, fmt.Errorf("The Discord WebHook URL ('%s') cannot be parsed as a url: %w", webhookURL, err)
+		return false, &url.URL{}, fmt.Errorf("the Discord WebHook URL ('%s') cannot be parsed as a url: %w", webhookURL, err)
 	}
 
-	host, _, err := net.SplitHostPort(parsedUrl.Host)
-	if err != nil {
-		// return false, parsedUrl, fmt.Errorf("The Discord WebHook URL ('%s') host ('%s') cannot be separated into domain/ip and port components: %w", webhookURL, parsedUrl.Host, err)
-	}
+	host, _, _ := net.SplitHostPort(parsedUrl.Host)
 	if host == "" {
 		host = parsedUrl.Host
 	}
@@ -37,7 +34,7 @@ func CheckWebhookURL(webhookURL string) (bool, *url.URL, error) {
 
 	ok := re.Match([]byte(webhookURL))
 	if !ok {
-		return false, parsedUrl, fmt.Errorf("The Discord WebHook URL doesn't seem to be a valid Discord Webhook API url: '%s'", webhookURL)
+		return false, parsedUrl, fmt.Errorf("the Discord WebHook URL doesn't seem to be a valid Discord Webhook API url: '%s'", webhookURL)
 	}
 
 	return ok, parsedUrl, nil

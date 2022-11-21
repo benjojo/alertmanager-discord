@@ -22,11 +22,11 @@ const (
 )
 
 func Test_Serve_HappyPath(t *testing.T) {
-	// create a mock discord server to respond to our request
+	// create a mock Discord server to respond to our request
 	receivedRequest := make(chan bool, 1)
 	mockDiscordServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Discord mock server will always return with Status Code 200 OK
-		receivedRequest <- true // notify the channel that the discord server received the request
+		receivedRequest <- true // notify the channel that the Discord server received the request
 	}))
 	defer mockDiscordServer.Close()
 
@@ -44,19 +44,23 @@ func Test_Serve_HappyPath(t *testing.T) {
 	}
 
 	res, err := client.Get(fmt.Sprintf("http://%s/liveness", serverListenAddress))
+	assert.NoError(t, err)
 	assert.NotNil(t, res, "response to GET '/liveness' should not be nil")
 	assert.Equal(t, http.StatusOK, res.StatusCode, "GET liveness should return status code OK (200)")
 	res, err = client.Get(fmt.Sprintf("http://%s/readiness", serverListenAddress))
+	assert.NoError(t, err)
 	assert.NotNil(t, res, "response to GET '/readiness' should not be nil")
 	assert.Equal(t, http.StatusOK, res.StatusCode, "GET readiness should return status code OK (200)")
 	res, err = client.Get(fmt.Sprintf("http://%s/favicon.ico", serverListenAddress))
+	assert.NoError(t, err)
 	assert.NotNil(t, res, "response to GET '/favicon.ico' should not be nil")
 	assert.Equal(t, http.StatusOK, res.StatusCode, "GET favicon.ico should return status code OK (200)")
 	res, err = client.Get(fmt.Sprintf("http://%s/metrics", serverListenAddress))
+	assert.NoError(t, err)
 	assert.NotNil(t, res, "response to GET '/metrics' should not be nil")
 	assert.Equal(t, http.StatusOK, res.StatusCode, "GET favicon.ico should return status code OK (200)")
 
-	// assert mock discord server received expected json
+	// assert mock Discord server received expected json
 	ao := alertmanager.Out{
 		Alerts: []alertmanager.Alert{
 			{
@@ -67,6 +71,11 @@ func Test_Serve_HappyPath(t *testing.T) {
 			Summary string `json:"summary"`
 		}{
 			Summary: "a_common_annotation_summary",
+		},
+		GroupLabels: struct {
+			Alertname string `json:"alertname"`
+		}{
+			Alertname: "testAlertName",
 		},
 	}
 
@@ -86,7 +95,7 @@ func Test_Serve_HappyPath(t *testing.T) {
 	assert.NoError(t, err, "sending request to alertmanager-discord server.")
 	assert.NotNil(t, res, "response to POST '/' should not be nil")
 	assert.Equal(t, http.StatusOK, res.StatusCode, "sending valid alertmanager data should expect http response status code")
-	assert.True(t, <-receivedRequest, "Mock discord server should have received response") // will wait until the request is received
+	assert.True(t, <-receivedRequest, "Mock Discord server should have received response") // will wait until the request is received
 
 	// TODO assert log lines were generated
 

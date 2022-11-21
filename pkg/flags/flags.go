@@ -5,4 +5,5 @@ const (
 	DiscordWebhookUrlFlagKey     = "discord_webhook_url"
 	ListenAddressFlagKey         = "listen_address"
 	MaxBackoffTimeSecondsFlagKey = "max_backoff_time_seconds"
+	LogLevelFlagKey              = "log_level"
 )
