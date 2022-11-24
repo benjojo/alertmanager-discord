@@ -16,11 +16,6 @@ if [[ -z "${DOCKER_REG_USER}" ]]; then
   exit 1
 fi
 
-if [[ -z "${DOCKER_REG_URL}" ]]; then
-  echo "DOCKER_REG_URL environment variable should be set"
-  exit 1
-fi
-
 DOCKER_IMAGE_TAG="${DOCKER_IMAGE_TAG:-"speckle/alertmanager-discord"}"
 
 docker tag "${DOCKER_IMAGE_TAG}:${VERSION}" "${DOCKER_IMAGE_TAG}:latest"
