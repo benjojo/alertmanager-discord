@@ -38,8 +38,6 @@ workflows:
             - pre-commit
 
       - helm-package-and-publish:
-          context:
-            - github-write-alertmanagerdiscord-repo
           filters:
             tags: *filter-allow-all
             branches:
@@ -154,6 +152,9 @@ jobs:
     working_directory: *workingdir
     steps:
       - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "ef:0c:a5:6a:ef:c5:81:43:8c:36:4f:37:40:5b:17:2d"
       - attach_workspace:
           at: /tmp/workspace
       - run:
