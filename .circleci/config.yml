@@ -1,33 +1,79 @@
 version: 2.1
 
+orbs:
+  helm: travelaudience/helm@0.2.13
+
 workflows:
   version: 2
   build-image:
     jobs:
+      - get-version:
+          filters:
+            tags: &filter-allow-all
+              only: /.*/
+
       - pre-commit:
           filters:
-            tags: &filter-all-tags # run for all tags
-              only: /.*/
+            tags: *filter-allow-all
 
       - docker-build:
           filters:
-            tags: *filter-all-tags
+            tags: *filter-allow-all
             branches:
               ignore:
                 - main
+          requires:
+            - get-version
 
       - docker-build-and-publish:
           context:
             - docker-hub
           filters:
-            tags: *filter-all-tags
+            tags: *filter-allow-all
             branches:
               only:
                 - main
           requires:
+            - get-version
             - pre-commit
 
+      - helm-package-and-publish:
+          context:
+            - github-write-alertmanagerdiscord-repo
+          filters:
+            tags: *filter-allow-all
+            branches:
+              only:
+                - main
+          requires:
+            - docker-build
+            - docker-build-and-publish
+
 jobs:
+  get-version:
+    docker: &docker-image
+      - image: cimg/base:2022.04
+    working_directory: &workingdir /tmp/ci
+    steps:
+      - checkout
+      - run: mkdir -p workspace
+      - run:
+          name: set version
+          command: |
+            echo "export VERSION=$(.circleci/get_version.sh)" >> workspace/env-vars
+      - run:
+          name: store version
+          command: |
+            cat workspace/env-vars >> $BASH_ENV
+      - run:
+          name: echo version
+          command: |
+            echo "VERSION=${VERSION}"
+      - persist_to_workspace:
+          root: workspace
+          paths:
+            - env-vars
+
   pre-commit:
     parameters:
       config_file:
@@ -41,8 +87,8 @@ jobs:
         type: string
     docker:
       - image: speckle/pre-commit-runner:latest
-    resource_class: large
-    working_directory: &workingdir /tmp/ci
+    resource_class: &docker-resource-class medium
+    working_directory: *workingdir
     steps:
       - checkout
       - restore_cache:
@@ -64,12 +110,17 @@ jobs:
           when: on_fail
 
   docker-build-and-publish:
-    docker: &docker-image
-      - image: cimg/base:2022.04
-    resource_class: &docker-resource-class large
+    docker: *docker-image
+    resource_class: *docker-resource-class
     working_directory: *workingdir
     steps:
       - checkout
+      - attach_workspace:
+          at: /tmp/ci/workspace
+      - run:
+          name: populate environment variables
+          command: |
+            cat workspace/env-vars >> $BASH_ENV
       - setup_remote_docker: &remote-docker
           # a weird issue with yarn installing packages throwing EPERM errors
           # this fixes it
@@ -85,7 +136,30 @@ jobs:
     working_directory: *workingdir
     steps:
       - checkout
+      - attach_workspace:
+          at: /tmp/ci/workspace
+      - run:
+          name: populate environment variables
+          command: |
+            cat workspace/env-vars >> $BASH_ENV
       - setup_remote_docker: *remote-docker
       - run:
           name: Build
           command: ./.circleci/build.sh
+
+  helm-package-and-publish:
+    docker:
+      - image: quay.io/helmpack/chart-testing:v3.7.1-amd64
+    resource_class: *docker-resource-class
+    working_directory: *workingdir
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /tmp/workspace
+      - run:
+          name: populate environment variables
+          command: |
+            cat /tmp/workspace/env-vars >> $BASH_ENV
+      - run:
+          name: Build and Publish
+          command: ./.circleci/package_and_publish_helm.sh
