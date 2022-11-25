@@ -37,7 +37,7 @@ git config user.email "${GIT_EMAIL}"
 git config user.name "${GIT_USERNAME}"
 git fetch
 git switch "${HELM_PACKAGE_BRANCH}"
-if [ "${CIRCLE_BRANCH}" == "${HELM_STABLE_BRANCH}" ]; then
+if [[ -n "${CIRCLE_TAG}" || "${CIRCLE_BRANCH}" == "${HELM_STABLE_BRANCH}" ]]; then
   echo "🛻 copying packages to stable directory"
   cp -a "${TEMP_PACKAGE_DIR}" stable/
   pushd stable
