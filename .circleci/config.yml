@@ -18,7 +18,8 @@ workflows:
 
       - docker-build:
           filters:
-            tags: *filter-allow-all
+            tags: &filter-ignore-all
+              ignore: /.*/
             branches:
               ignore:
                 - main
