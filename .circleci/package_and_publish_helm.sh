@@ -39,7 +39,7 @@ git fetch
 git switch "${HELM_PACKAGE_BRANCH}"
 if [ "${CIRCLE_BRANCH}" == "${HELM_STABLE_BRANCH}" ]; then
   echo "🛻 copying packages to stable directory"
-  cp -a "${TEMP_PACKAGE_DIR}" stable/
+  cp -a "${TEMP_PACKAGE_DIR}/." stable/
   pushd stable
   helm repo index .
   popd
