@@ -4,8 +4,8 @@
 FROM golang:alpine as builder
 # Install SSL ca certificates
 RUN apk update && apk add --no-cache \
-  git=2.36.3-r0 \
-  ca-certificates=20220614-r0
+  git=2.38.2-r0 \
+  ca-certificates=20220614-r3
 # Create appuser
 RUN adduser -D -g '' appuser
 COPY . $GOPATH/src/alertmanager-discord/
