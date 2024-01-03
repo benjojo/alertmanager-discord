@@ -149,6 +149,12 @@ Alternatively, to run pre-commit on the entire repository:
 pre-commit run --all-files
 ```
 
+### Upgrading
+
+```shell
+go get -u ./...
+```
+
 ### Testing
 
 ```shell
